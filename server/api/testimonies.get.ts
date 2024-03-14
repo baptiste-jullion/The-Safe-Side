@@ -1,13 +1,14 @@
 export default defineEventHandler(async (event) => {
-  try {
-    const { data } = await fetch(process.env.STRAPI_URL + "/testimonies", {
+  const query = getQuery(event);
+  const { apiToken, apiUri } = useRuntimeConfig();
+
+  return await fetch(
+    `${apiUri}/testimonies?populate=*&filters[Vertical][$eq]=${query.vertical}`,
+    {
       method: "GET",
       headers: {
-        Authorization: `${process.env.STRAPI_TOKEN}`,
+        Authorization: `${apiToken}`,
       },
-    });
-    return data;
-  } catch (error) {
-    console.log(error);
-  }
+    },
+  );
 });

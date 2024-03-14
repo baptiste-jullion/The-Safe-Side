@@ -1,12 +1,21 @@
 <script setup>
+const props = defineProps({
+  vertical: { type: Boolean, default: false },
+});
 const { strapiBaseUri } = useRuntimeConfig().public;
-const response = await useFetch("/api/testimonies?vertical=false");
+const response = await useFetch(`/api/testimonies?vertical=${props.vertical}`);
 const testimonies = JSON.parse(JSON.stringify(response.data.value)).data;
 </script>
 
 <template>
-  <div class="grid grid-cols-1 justify-center gap-3 lg:grid-cols-3">
+  <div
+    :class="
+      vertical ? 'grid-cols-2 lg:grid-cols-5' : 'grid-cols-1 lg:grid-cols-3'
+    "
+    class="grid justify-center gap-3"
+  >
     <UiTestimonyCard
+      :vertical
       v-for="testimony in testimonies"
       :image="
         strapiBaseUri +
