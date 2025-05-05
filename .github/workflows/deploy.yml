@@ -1,0 +1,31 @@
+name: Deploy Nuxt3 Bun App
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p 12018 -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy via SSH
+        run: |
+          ssh -p 12018 ${{ secrets.SSH_USER }}@${{ secrets.HOST }} << 'EOF'
+            cd /home/sites/baptiste-jullion.dev/thesafeside/The-Safe-Side
+            git pull origin master
+            docker build -t the-safe-side-front .
+            docker stop the-safe-side-front-website || true
+            docker rm the-safe-side-front-website || true
+            docker run -d --name the-safe-side-front-website -p 9531:9531 --restart unless-stopped the-safe-side-front
+          EOF
