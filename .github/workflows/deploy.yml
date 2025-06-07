@@ -27,5 +27,5 @@ jobs:
             docker build -t the-safe-side-front .
             docker stop the-safe-side-front-website || true
             docker rm the-safe-side-front-website || true
-            STRAPI_URL=${{ secrets.STRAPI_URL }} STRAPI_URL_UPLOADS=${{ secrets.STRAPI_URL_UPLOADS }} STRAPI_TOKEN=${{ secrets.STRAPI_TOKEN }} docker run -d --name the-safe-side-front-website --network the-safe-side-network -p 9531:9531 --restart unless-stopped the-safe-side-front
+            docker run -d --name the-safe-side-front-website --network the-safe-side-network -p 9531:9531 --restart unless-stopped the-safe-side-front
           EOF
